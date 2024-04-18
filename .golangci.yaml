@@ -1,0 +1,65 @@
+---
+run:
+  timeout: 5m
+
+linters:
+  enable-all: true
+  disable:
+    - exhaustivestruct
+    - exhaustruct
+    - golint
+    - interfacer
+    - maligned
+    - scopelint
+    - depguard
+
+linters-settings:
+  funlen:
+    lines: 100
+    statements: 50
+
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/jkoelker/cotton)
+
+  goimports:
+    # put imports beginning with prefix after 3rd-party packages;
+    # it's a comma-separated list of prefixes
+    local-prefixes: github.com/jkoelker/cotton
+
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+
+  wrapcheck:
+    ignoreSigs:
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - .Wrap(
+      - .Wrapf(
+      - .WrapError(
+      - .WrapWarn(
+      - .LogWrap(
+
+  varnamelen:
+    ignore-type-assert-ok: true
+    ignore-map-index-ok: true
+    ignore-chan-recv-ok: true
+
+issues:
+  exclude-rules:
+    # Exclude lll issues for long lines with go:generate
+    - linters:
+        - lll
+      source: "^//go:generate "
+    - linters:
+        - dupl
+        - goerr113
+      path: _test\.go
+
+  max-issues-per-linter: 0
+  max-same-issues: 0

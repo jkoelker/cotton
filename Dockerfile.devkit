@@ -1,0 +1,27 @@
+# Get as many dependancies from official docker images to allow
+# `dependabot` to manage them for us.
+FROM docker.io/golangci/golangci-lint:v1.57.2 as golangci-lint
+FROM docker.io/hadolint/hadolint:2.12.0 as hadolint
+
+FROM docker.io/golang:1.22.2 as builder
+
+ENV GOBIN=/tools
+COPY tools /go/src/github.com/jkoelker/cotton
+WORKDIR /go/src/github.com/jkoelker/cotton
+
+# We want word splitting for the output of `go list`.
+# hadolint ignore=SC2046
+RUN mkdir -p /tools \
+    && go install -v $(go list -e -f '{{ join .Imports " " }}' -tags=tools)
+
+# The final image.
+FROM docker.io/golang:1.22.2
+
+COPY --from=hadolint /bin/hadolint /usr/local/bin/
+COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/
+COPY --from=builder /tools /usr/local/bin
+
+RUN git config --global safe.directory /code && \
+    git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+
+CMD ["/bin/bash"]
