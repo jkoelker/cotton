@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/oauth2 v0.19.0
+	golang.org/x/oauth2 v0.20.0
 	sigs.k8s.io/yaml v1.4.0
 )
 
