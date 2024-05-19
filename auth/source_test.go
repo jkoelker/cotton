@@ -201,8 +201,6 @@ func TestEnvClientSecret(t *testing.T) {
 		clientSecret := gofakeit.UUID()
 		t.Setenv("COTTON_CLIENT_SECRET", clientSecret)
 
-		t.Logf("COTTON_CLIENT_SECRET: %s", os.Getenv("COTTON_CLIENT_SECRET"))
-
 		authInstance, err := auth.New()
 		require.NoError(t, err)
 		require.NotNil(t, authInstance)
