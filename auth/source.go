@@ -44,11 +44,114 @@ func WithCacheFile(file string) func(*Auth) error {
 	}
 }
 
-// New creates a new Auth instance.
-func New(config *oauth2.Config, output io.Writer, opts ...func(*Auth) error) (*Auth, error) {
+// WithOutput sets the output writer.
+func WithOutput(output io.Writer) func(*Auth) error {
+	return func(auth *Auth) error {
+		auth.Output = output
+
+		return nil
+	}
+}
+
+// WithOAuth2Config sets the oauth2.Config.
+func WithOAuth2Config(config *oauth2.Config) func(*Auth) error {
+	return func(auth *Auth) error {
+		auth.Config = config
+
+		return nil
+	}
+}
+
+// WithOAuth2ClientID sets the client ID.
+func WithOAuth2ClientID(id string) func(*Auth) error {
+	return func(auth *Auth) error {
+		auth.Config.ClientID = id
+
+		return nil
+	}
+}
+
+// WithOAuth2ClientSecret sets the client secret.
+func WithOAuth2ClientSecret(secret string) func(*Auth) error {
+	return func(auth *Auth) error {
+		auth.Config.ClientSecret = secret
+
+		return nil
+	}
+}
+
+// WithOAuth2Endpoint sets the endpoint.
+func WithOAuth2Endpoint(endpoint oauth2.Endpoint) func(*Auth) error {
+	return func(auth *Auth) error {
+		auth.Config.Endpoint = endpoint
+
+		return nil
+	}
+}
+
+// WithOAuth2EndpointAuthURL sets the auth URL.
+func WithOAuth2EndpointAuthURL(url string) func(*Auth) error {
+	return func(auth *Auth) error {
+		auth.Config.Endpoint.AuthURL = url
+
+		return nil
+	}
+}
+
+// WithOAuth2EndpointTokenURL sets the token URL.
+func WithOAuth2EndpointTokenURL(url string) func(*Auth) error {
+	return func(auth *Auth) error {
+		auth.Config.Endpoint.TokenURL = url
+
+		return nil
+	}
+}
+
+// WithOAuth2RedirectURL sets the redirect URL.
+func WithOAuth2RedirectURL(url string) func(*Auth) error {
+	return func(auth *Auth) error {
+		auth.Config.RedirectURL = url
+
+		return nil
+	}
+}
+
+func getEnv(key string, prefixes ...string) string {
+	if len(prefixes) == 0 {
+		prefixes = []string{"COTTON_SCHWAB_", "COTTON_", "SCHWAB_"}
+	}
+
+	for _, prefix := range prefixes {
+		if value, ok := os.LookupEnv(prefix + key); ok {
+			return value
+		}
+	}
+
+	return os.Getenv(key)
+}
+
+// New creates a new Auth instance. Use `With*` functions to set the options.
+// By default it will use the `CLIENT_ID` and `CLIENT_SECRET` (optionally
+// prefixed with `COTTON_SCHWAB_`, `COTTON_`, or `SCHWAB_`) environment
+// variables.
+func New(opts ...func(*Auth) error) (*Auth, error) {
+	clientID := getEnv("CLIENT_ID")
+	clientSecret := getEnv("CLIENT_SECRET")
+
 	auth := &Auth{
-		Config: config,
-		Output: output,
+		Config: &oauth2.Config{
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+
+			Endpoint: oauth2.Endpoint{
+				AuthURL:  "https://api.schwabapi.com/v1/oauth/authorize",
+				TokenURL: "https://api.schwabapi.com/v1/oauth/token",
+			},
+
+			RedirectURL: "http://127.0.0.1:8080",
+		},
+
+		Output: os.Stdout,
 	}
 
 	for _, opt := range opts {
