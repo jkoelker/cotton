@@ -1,0 +1,8 @@
+#
+
+.gitignore
+.openapi-generator/
+.travis.yml
+api/
+git_push.sh
+README.md

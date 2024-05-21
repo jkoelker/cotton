@@ -1,0 +1,11 @@
+---
+globalProperties:
+  apiTests: false
+  apiDocs: false
+  modelTests: false
+  modelDocs: false
+
+enumClassPrefix: true
+packageName: trader
+isGoSubmode: true
+withGoMod: false
