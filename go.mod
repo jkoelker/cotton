@@ -6,7 +6,7 @@ require (
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/omeid/uconfig v0.7.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/oauth2 v0.20.0
+	golang.org/x/oauth2 v0.21.0
 	sigs.k8s.io/yaml v1.4.0
 )
 
